@@ -6,7 +6,6 @@
 *.exe
 *.o
 *.so
-Gemfile.lock
 
 # Packages #
 ############
@@ -36,4 +35,3 @@ Gemfile.lock
 .Trashes
 ehthumbs.db
 Thumbs.db
-
