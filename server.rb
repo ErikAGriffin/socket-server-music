@@ -4,7 +4,7 @@ EM.run do
 
   puts "I'm running too!"
   # hmm.. How to set this up for the heroku server
-  EM::WebSocket.run(host: 'http://em-music-server.herokuapp.com', port: 8080) do |ws|
+  EM::WebSocket.run(host: 'em-music-server.herokuapp.com', port: 8080) do |ws|
 
     puts "Event Machine running..."
 
