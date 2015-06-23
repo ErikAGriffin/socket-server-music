@@ -6,12 +6,11 @@ GEM
       http_parser.rb (~> 0.6.0)
     eventmachine (1.0.7)
     http_parser.rb (0.6.0)
+    multi_json (1.11.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   em-websocket
-
-BUNDLED WITH
-   1.10.2
+  multi_json

@@ -1,31 +1,45 @@
 require 'em-websocket'
+require 'multi_json'
+
+def load_json(string)
+  begin
+    message = MultiJson.load(string, symbolize_keys: true)
+  rescue MultiJson::ParseError => exception
+    message = {error: exception.cause, data:exception.data}
+  end
+  message
+end
 
 EM.run do
 
-  puts "I'm running too!"
-  # hmm.. How to set this up for the heroku server
-  EM::WebSocket.run(host: 'em-music-server.herokuapp.com', port: 8080) do |ws|
+  puts "Event Machine running..."
 
-    puts "Event Machine running..."
+  @users = {}
+
+  # hmm.. How to set this up for the heroku server
+  EM::WebSocket.run(host: '0.0.0.0', port: 8080) do |ws|
 
     ws.onopen do |handshake|
-      puts "WebSocket has opened!\n #{{
-        :path => handshake.path,
-        :query => handshake.query,
-        :origin => handshake.origin,
-      }}"
+      puts "WebSocket has opened!"
+      # It seems the handshake does know of the cookies.
+      # p handshake
+      puts "----" * 10
+      # Somehow if this method is here, the onmessage
+      # outside the onopen does not get called.
+      ws.onmessage do |message|
+        client = load_json(message)
+        p client
+      end
+    end
 
-      ws.send "No Luke. I am your father."
+    ws.onmessage do |data|
+      # message = load_json(data)
+      puts data
     end
 
     ws.onclose do
       puts "Connection closed."
-    end
-
-    ws.onmessage do |message|
-      puts "Receiving transmission.."
-      puts message
-      ws.send "Pong: #{message}"
+      # @sockets.delete(ws)
     end
 
     ws.onerror do |e|
