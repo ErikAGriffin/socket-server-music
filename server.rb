@@ -21,18 +21,18 @@ EM.run do
 
     ws.onopen do |handshake|
       puts "WebSocket has opened!"
-      # It seems the handshake does know of the cookies.
-      # p handshake
-      puts "----" * 10
-      # Somehow if this method is here, the onmessage
-      # outside the onopen does not get called.
+
+      # Why here over outside ?
       ws.onmessage do |message|
         client = load_json(message)
         p client
       end
     end
 
+
+    # This is not called if it is defined inside onopen.
     ws.onmessage do |data|
+      puts "Miraculously I've been called"
       # message = load_json(data)
       puts data
     end
