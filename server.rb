@@ -14,7 +14,9 @@ EM.run do
 
   puts "Event Machine running..."
 
-  @users = {}
+  @servers = {}
+  @clients = {}
+#   Hash.new {|value, key| value[key.to_s] if Symbol === key }
 
   # hmm.. How to set this up for the heroku server
   EM::WebSocket.run(host: '0.0.0.0', port: 8080) do |ws|
@@ -23,18 +25,22 @@ EM.run do
       puts "WebSocket has opened!"
 
       # Why here over outside ?
-      ws.onmessage do |message|
-        client = load_json(message)
-        p client
-      end
+#       ws.onmessage do |message|
+#         client = load_json(message)
+#         p client
+#       end
     end
 
 
     # This is not called if it is defined inside onopen.
     ws.onmessage do |data|
-      puts "Miraculously I've been called"
-      # message = load_json(data)
-      puts data
+      message = load_json(data)
+      if message[:type] = "server"
+        @servers[message[:name]] = ws if !@servers[message[:name]]
+      else
+        @clients[message[:name]] = ws if !@clients[message[:name]]
+      end
+
     end
 
     ws.onclose do
