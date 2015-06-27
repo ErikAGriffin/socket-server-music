@@ -7,6 +7,9 @@ EM.run do
     # so a client may push a song to a server whos browser accidentally closed
     # and will reopen.
 
+    # A better question now is how to handle servers that DO expire,
+    # cleaning up the unused hashes and whatnot.
+
 
   def load_json(string)
     begin
@@ -49,12 +52,18 @@ EM.run do
       puts "WebSocket has opened!"
     end
 
-    # This is not called if it is defined inside onopen.
     ws.onmessage do |data|
       message = load_json(data)
-      p message
+      host = message[:host]
+      puts "----- #{message}"
       add_socket(message,ws)
-      puts @sockets
+      if !message[:server]
+        @sockets[host][:server].send data
+      elsif message[:server]
+        @sockets[host].each_pair do |key,socket|
+          socket.send data if key != :server
+        end
+      end
     end
 
     ws.onclose do
