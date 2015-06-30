@@ -50,7 +50,7 @@ EM.run do
 #   Hash.new {|value, key| value[key.to_s] if Symbol === key }
 
   # hmm.. How to set this up for the heroku server
-  EM::WebSocket.run(host: '0.0.0.0', port: 8080) do |ws|
+  EM::WebSocket.run(host: '0.0.0.0', port: ENV['PORT'] || 8080) do |ws|
 
     ws.onopen do |handshake|
       puts "WebSocket has opened!"
