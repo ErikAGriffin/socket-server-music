@@ -48,8 +48,8 @@ EM.run do
   @sockets = {}
 
   EventMachine::PeriodicTimer.new(15) do
-    @socket.each_key do |key|
-      @socket[key].each_value {|s| s.pong(body = '')}
+    @sockets.each_key do |key|
+      @sockets[key].each_value {|s| s.pong(body = '')}
     end
   end
 
