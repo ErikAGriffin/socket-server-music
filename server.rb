@@ -3,6 +3,8 @@ require 'multi_json'
 
 EM.run do
 
+  # NO idea how to run this on heroku atm.
+
     # Servers that close should not imediately be "deleted",
     # so a client may push a song to a server whos browser accidentally closed
     # and will reopen.
