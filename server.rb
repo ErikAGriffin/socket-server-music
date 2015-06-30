@@ -30,15 +30,13 @@ EM.run do
 
     host = message[:host]
 
-    if message[:server] && (!@sockets[host] || !@sockets[host][:server])
+    if message[:server] && !@sockets[host]
       @sockets[host] = {server: socket}
+    elsif !@sockets[host][:server]
+      @sockets[host][:server] = socket
     elsif !message[:server]
       client_id = message[:clientID]
-#       !@sockets[host][client_id] ? @sockets[host][client_id] = socket : socket
-      puts "Checking clientID #{client_id}"
-      if !@sockets[host][client_id]
-        @sockets[host][client_id] = socket
-      end
+      !@sockets[host][client_id] ? @sockets[host][client_id] = socket : nil
     end
 
   end
@@ -73,17 +71,22 @@ EM.run do
 
     ws.onclose do
       puts "Connection closed."
-      # Shit I either have to find a way
-      # to delete that socket from in here
-      # or be overwriting it on every message
-      # Currently to delete it here I would
-      # have to loop through every single
-      # socket connected to this server...
+      catch :socket_removed do
+        @sockets.each_value do |hash|
+          puts "Iterating Through hash!"
+          hash.each_pair do |key,socket|
+            puts key
+            if socket == ws
+              hash.delete(key)
+              throw :socket_removed
+            end
+          end
+        end
+      end
       @sockets.each_key do |key|
         puts "#{key}:"
         p @sockets[key].keys
       end
-      # @sockets.delete(ws)
     end
 
     ws.onerror do |e|
