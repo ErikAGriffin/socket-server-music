@@ -38,7 +38,7 @@ EM.run do
       @sockets[host][:server] = socket
     elsif !message[:server]
       client_id = message[:clientID]
-      !@sockets[host][client_id] ? @sockets[host][client_id] = socket : nil
+      !@sockets[host][client_id] ? (@sockets[host][client_id] = socket;message[:new] = true) : nil
     end
 
   end
@@ -69,7 +69,7 @@ EM.run do
       add_socket(message,ws)
       p @sockets[host].keys
       if !message[:server]
-        @sockets[host][:server].send data
+        @sockets[host][:server].send MultiJson.dump(message)
       elsif message[:server]
         @sockets[host].each_pair do |key,socket|
           socket.send data if key != :server
@@ -80,21 +80,29 @@ EM.run do
     ws.onclose do
       puts "Connection closed."
       catch :socket_removed do
-        @sockets.each_value do |hash|
+        @sockets.each_pair do |hostkey,hash|
           puts "Iterating Through hash!"
           hash.each_pair do |key,socket|
             puts key
             if socket == ws
               hash.delete(key)
+              if hash.empty?
+                @sockets.delete(hostkey)
+              end
               throw :socket_removed
             end
           end
         end
       end
       @sockets.each_key do |key|
-        puts "#{key}:"
+        # This isn't running. Throw a little strong?
+        puts "#{key}: OOOGA BOOKA!"
         p @sockets[key].keys
       end
+        #p @sockets
+        puts "End closed"
+        p @sockets.keys
+        p @sockets.empty?
     end
 
     ws.onerror do |e|

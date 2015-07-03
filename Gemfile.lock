@@ -14,3 +14,6 @@ PLATFORMS
 DEPENDENCIES
   em-websocket
   multi_json
+
+BUNDLED WITH
+   1.10.2
