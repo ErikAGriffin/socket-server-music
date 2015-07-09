@@ -56,7 +56,8 @@ EM.run do
     ws.onmessage do |data|
       message = load_json(data)
       host = message[:host]
-      puts "----- #{message}"
+      puts "----- Incoming #{message[:server] ? 'Server' : 'Client'} Transmission -----"
+      puts message
       add_socket(message,ws)
       if !message[:server]
         @sockets[host][:server].send MultiJson.dump(message)
