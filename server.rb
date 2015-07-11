@@ -76,6 +76,7 @@ EM.run do
         @sockets.each_pair do |hostkey,hash|
           hash.each_pair do |key,socket|
             if socket == ws
+              puts "Socket removed: #{hostkey}: #{key}"
               hash.delete(key)
               if hash.empty?
                 @sockets.delete(hostkey)
