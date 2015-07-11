@@ -79,6 +79,7 @@ EM.run do
               puts "Socket removed: #{hostkey}: #{key}"
               hash.delete(key)
               if hash.empty?
+                puts "----- DELETED SOCKET HASH -----"
                 @sockets.delete(hostkey)
               end
               throw :socket_removed
