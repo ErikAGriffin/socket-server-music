@@ -21,17 +21,15 @@ EM.run do
   # using only the handshake, AKA only when it is opened?
 
   def add_socket(message,socket)
-
     # Must do server side error handling if a phony hostname gets sent in here.
     host = message[:host]
-
-    if message[:server] && !@sockets[host]
-      @sockets[host] = {server: socket}
-    elsif !@sockets[host][:server]
+    if !@sockets[host]
+      @sockets[host] = {}
+    end
+    if message[:server] && !@sockets[host][:server]
       @sockets[host][:server] = socket
-    elsif !message[:server]
-      client_id = message[:clientID]
-      !@sockets[host][client_id] ? (@sockets[host][client_id] = socket) : nil
+    elsif !message[:server] && !@sockets[host][message[:clientID]]
+      @sockets[host][message[:clientID]] = socket
     end
   end
 
@@ -60,7 +58,7 @@ EM.run do
       puts message
       add_socket(message,ws)
       if !message[:server]
-        @sockets[host][:server].send MultiJson.dump(message)
+        @sockets[host][:server].send MultiJson.dump(message) if @sockets[host][:server]
       elsif message[:server]
         @sockets[host].each_pair do |key,socket|
           socket.send data if key != :server
