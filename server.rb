@@ -40,8 +40,12 @@ EM.run do
   # Keeps connections open for heroku
 
   EventMachine::PeriodicTimer.new(15) do
-    @sockets.each_key do |key|
-      @sockets[key].each_value {|s| s.pong(body = '')}
+    if @sockets.empty?
+      puts "Going to sleep soon..."
+    else
+      @sockets.each_value do |host|
+        host.each_value {|s| s.pong(body = '')}
+      end
     end
   end
 
